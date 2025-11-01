@@ -1,35 +1,28 @@
-import { Controller, Get, Param, Post, Req } from '@nestjs/common';
-import { Request } from 'express';
+
+import { Controller, Get, Post, Body } from '@nestjs/common';
+import { CreateCatDto } from './dto/create-cat.dto';
+import { CatsService } from './cats.service';
+import { Cat } from './interfaces/cat.interface';
 
 @Controller('cats')
 export class CatsController {
-    /* 
-        This method will return a 200 status code 
-        along with the associated response, which in 
-        this case is just a string. 
-    */
-    @Get()
-    findAll(@Req() request: Request): string {
-        return 'this action returns all cats'
-    }
+  /* 
+    The CatsService is injected through the class constructor. 
+    Notice the use of the private keyword. This shorthand allows 
+    us to both declare and initialize the catsService member in 
+    the same line, streamlining the process.
 
-    @Post()
-    create(): string {
-        return 'this action adds a new cat'
-    }
 
-    @Get(':id')
-    findOne(@Param() params: any): string {
-        console.log(params.id);
-        return `This action returns a #${params.id} cat`;
-    }
-    /* 
-        this would be another option: 
+  */
+  constructor(private catsService: CatsService) {}
 
-            @Get(':id')
-            findOne(@Param('id') id: string): string {
-            return `This action returns a #${id} cat`;
-            }
+  @Post()
+  async create(@Body() createCatDto: CreateCatDto) {
+    this.catsService.create(createCatDto);
+  }
 
-    */
+  @Get()
+  async findAll(): Promise<Cat[]> {
+    return this.catsService.findAll();
+  }
 }
